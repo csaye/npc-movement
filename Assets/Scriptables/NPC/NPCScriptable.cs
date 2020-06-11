@@ -6,4 +6,5 @@ using UnityEngine;
 public class NPCScriptable : ScriptableObject
 {
     public string NPCName;
+    public List<Vector2> path;
 }

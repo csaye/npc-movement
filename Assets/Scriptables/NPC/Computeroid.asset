@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: Computeroid
   m_EditorClassIdentifier: 
   NPCName: Computeroid
+  path:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
