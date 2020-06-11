@@ -11,10 +11,10 @@ public class NPCController : MonoBehaviour
     private Animator animator;
 
     private List<Vector3> path;
-    [SerializeField] private int currentPathIndex;
+    private int currentPathIndex;
 
-    [SerializeField] private Vector2 currentTarget;
-    [SerializeField] private float nextTargetHour;
+    private Vector2 currentTarget;
+    private float nextTargetHour;
 
     private float lastMoveTime;
 
@@ -68,6 +68,8 @@ public class NPCController : MonoBehaviour
         if (!PauseSystem.paused)
         {
             CheckRollover();
+            
+            // If next target hour not reached
             if ((!rollover && (TimeSystem.gameTime.TotalHours < nextTargetHour)) || (rollover && (TimeSystem.gameTime.TotalHours - 24 < nextTargetHour)))
             {
                 // If at target, stop
@@ -76,6 +78,9 @@ public class NPCController : MonoBehaviour
                     rb.velocity = Vector2.zero;
 
                     animator.SetFloat("Speed", 0);
+
+                    // Snap to grid position for accuracy
+                    transform.position = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
                 }
                 else
                 // Move to target
@@ -160,6 +165,13 @@ public class NPCController : MonoBehaviour
                         return;
                     }
 
+                    // Try moving left
+                    if (!obstructed(left))
+                    {
+                        Move(left);
+                        return;
+                    }
+
                 }
                 // If right of target
                 else
@@ -168,6 +180,13 @@ public class NPCController : MonoBehaviour
                     if (!obstructed(left))
                     {
                         Move(left);
+                        return;
+                    }
+
+                    // Try moving right
+                    if (!obstructed(right))
+                    {
+                        Move(right);
                         return;
                     }
                 }
@@ -195,6 +214,12 @@ public class NPCController : MonoBehaviour
                         return;
                     }
 
+                    if (!obstructed(left))
+                    {
+                        Move(left);
+                        return;
+                    }
+
                 }
                 // If right of target
                 else
@@ -203,6 +228,13 @@ public class NPCController : MonoBehaviour
                     if (!obstructed(left))
                     {
                         Move(left);
+                        return;
+                    }
+
+                    // Try moving right
+                    if (!obstructed(right))
+                    {
+                        Move(right);
                         return;
                     }
                 }
@@ -233,6 +265,13 @@ public class NPCController : MonoBehaviour
                         return;
                     }
 
+                    // Try moving down
+                    if (!obstructed(down))
+                    {
+                        Move(down);
+                        return;
+                    }
+
                 }
                 // If above target
                 else
@@ -241,6 +280,13 @@ public class NPCController : MonoBehaviour
                     if (!obstructed(down))
                     {
                         Move(down);
+                        return;
+                    }
+
+                    // Try moving up
+                    if (!obstructed(up))
+                    {
+                        Move(up);
                         return;
                     }
                 }
@@ -267,6 +313,13 @@ public class NPCController : MonoBehaviour
                         return;
                     }
 
+                    // Try moving down
+                    if (!obstructed(down))
+                    {
+                        Move(down);
+                        return;
+                    }
+
                 }
                 // If above target
                 else
@@ -275,6 +328,13 @@ public class NPCController : MonoBehaviour
                     if (!obstructed(down))
                     {
                         Move(down);
+                        return;
+                    }
+
+                    // Try moving up
+                    if (!obstructed(up))
+                    {
+                        Move(up);
                         return;
                     }
                 }
@@ -287,18 +347,19 @@ public class NPCController : MonoBehaviour
     // Returns whether position has collider obstructing it
     bool obstructed(Vector2 target)
     {
+        Vector2 pos = (Vector2)transform.position + target;
+
         // Set check to size to just under full block in order to prevent collider bleeding
         Vector2 size = new Vector2(0.5f - errorMargin, 0.5f - errorMargin);
 
         // If non-trigger collider within the position found, return obstructed
-        foreach (Collider2D collider in (Physics2D.OverlapBoxAll(target, size, 0)))
+        foreach (Collider2D collider in (Physics2D.OverlapBoxAll(pos, size, 0)))
         {
             if (!collider.isTrigger)
             {
                 return true;
             }
         }
-
         return false;
     }
 

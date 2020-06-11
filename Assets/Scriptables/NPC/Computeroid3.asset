@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e0f0443bf0d844e38b488492c0a734a, type: 3}
+  m_Name: Computeroid3
+  m_EditorClassIdentifier: 
+  NPCName: 
+  path:
+  - {x: -3, y: -3, z: 3}
+  - {x: 3, y: -3, z: 6}
+  - {x: 0, y: 0, z: 12}
+  - {x: -3, y: 3, z: 18}
+  - {x: 3, y: 3, z: 23.5}
