@@ -4,23 +4,41 @@ using UnityEngine;
 
 public class NPCController : MonoBehaviour
 {
-
+    [Header("References: ")]
     public NPCScriptable NPCScriptable;
+    
+    private Rigidbody2D rb;
+    private Animator animator;
 
     private List<Vector3> path;
-    private int currentPathIndex;
+    [SerializeField] private int currentPathIndex;
 
-    private Vector2 currentTarget;
-    private float nextTargetHour;
+    [SerializeField] private Vector2 currentTarget;
+    [SerializeField] private float nextTargetHour;
 
     private float lastMoveTime;
-    private float speed = 1;
+
+    private float errorMargin = 0.01f;
+
+    private bool rollover = false;
+
+    private float lastGameTime;
 
     void Start()
     {
         if (path == null)
         {
             path = NPCScriptable.path;
+        }
+        
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
         }
 
         float currentHour = (float)TimeSystem.gameTime.TotalHours;
@@ -49,15 +67,25 @@ public class NPCController : MonoBehaviour
     {
         if (!PauseSystem.paused)
         {
-            if (TimeSystem.gameTime.TotalHours < nextTargetHour)
+            CheckRollover();
+            if ((!rollover && (TimeSystem.gameTime.TotalHours < nextTargetHour)) || (rollover && (TimeSystem.gameTime.TotalHours - 24 < nextTargetHour)))
             {
-                // If not at target
-                if ((Vector2)transform.position != currentTarget)
+                // If at target, stop
+                if (Mathf.Abs(transform.position.x - currentTarget.x) < errorMargin && Mathf.Abs(transform.position.y - currentTarget.y) < errorMargin)
                 {
-                    // Move to target
-                    if (Time.time - lastMoveTime >= speed)
+                    rb.velocity = Vector2.zero;
+
+                    animator.SetFloat("Speed", 0);
+                }
+                else
+                // Move to target
+                {
+                    if (Time.time - lastMoveTime >= 1)
                     {
                         MoveToTarget(currentTarget);
+
+                        // Snap to grid position for accuracy
+                        transform.position = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
                     }
                 }
             }
@@ -72,6 +100,16 @@ public class NPCController : MonoBehaviour
                 {
                     currentPathIndex++;
                 }
+                
+                // Set to rollover if new target hour is less than current target hour
+                if (path[currentPathIndex].z < nextTargetHour)
+                {
+                    rollover = true;
+                }
+                else
+                {
+                    rollover = false;
+                }
 
                 nextTargetHour = path[currentPathIndex].z;
                 currentTarget = new Vector2(path[currentPathIndex].x, path[currentPathIndex].y);
@@ -79,14 +117,25 @@ public class NPCController : MonoBehaviour
         }
     }
 
+    // Checks if hours reset and if so resets rollover
+    void CheckRollover()
+    {
+        if (TimeSystem.gameTime.TotalHours < lastGameTime)
+        {
+            rollover = false;
+        }
+
+        lastGameTime = (float)TimeSystem.gameTime.TotalHours;
+    }
+
     void MoveToTarget(Vector2 target)
     {
         lastMoveTime = Time.time;
 
-        Vector2 down = new Vector2(transform.position.x, transform.position.y - 1);
-        Vector2 left = new Vector2(transform.position.x - 1, transform.position.y);
-        Vector2 up = new Vector2(transform.position.x, transform.position.y + 1);
-        Vector2 right = new Vector2(transform.position.x + 1, transform.position.y);
+        Vector2 down = new Vector2(0, -1);
+        Vector2 left = new Vector2(-1, 0);
+        Vector2 up = new Vector2(0, 1);
+        Vector2 right = new Vector2(1, 0);
 
         // If on more similar vertical axis to target
         if (Mathf.Abs(transform.position.x - target.x) <= Mathf.Abs(transform.position.y - target.y))
@@ -239,7 +288,7 @@ public class NPCController : MonoBehaviour
     bool obstructed(Vector2 target)
     {
         // Set check to size to just under full block in order to prevent collider bleeding
-        Vector2 size = new Vector2(0.495f, 0.495f);
+        Vector2 size = new Vector2(0.5f - errorMargin, 0.5f - errorMargin);
 
         // If non-trigger collider within the position found, return obstructed
         foreach (Collider2D collider in (Physics2D.OverlapBoxAll(target, size, 0)))
@@ -255,6 +304,10 @@ public class NPCController : MonoBehaviour
 
     void Move(Vector2 target)
     {
-        transform.position = target;
+        rb.velocity = target;
+
+        animator.SetFloat("Horizontal", target.x);
+        animator.SetFloat("Vertical", target.y);
+        animator.SetFloat("Speed", 1);
     }
 }

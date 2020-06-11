@@ -9,6 +9,14 @@ public class TimeSystem : MonoBehaviour
 
     [SerializeField] private float elapsedTime;
 
+    private float cycleMinutes = 1;
+    private float cycleSpeed;
+
+    void Start()
+    {
+        cycleSpeed = 1440.0f / cycleMinutes;
+    }
+
     void Update()
     {
         UpdateGameTime();
@@ -20,7 +28,7 @@ public class TimeSystem : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            gameTime = TimeSpan.FromSeconds(elapsedTime * 120);
+            gameTime = TimeSpan.FromSeconds(elapsedTime * cycleSpeed);
 
             if (gameTime.TotalHours >= 24)
             {
