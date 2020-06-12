@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scriptables\NPC\NPCScriptable.cs" />
      <Compile Include="Assets\Scripts\NPC\NPCController.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Systems\PauseSystem.cs" />
      <Compile Include="Assets\Scripts\Systems\TimeSystem.cs" />
      <Compile Include="Assets\Scripts\UI\TimeDisplayUI.cs" />
