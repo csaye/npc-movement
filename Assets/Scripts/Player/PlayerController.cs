@@ -22,6 +22,15 @@ public class PlayerController : MonoBehaviour
 
     private bool waitFrameOver = false;
 
+    private InputSystem inputSystem;
+    private Vector2 _movementDirection;
+
+    void Awake()
+    {
+        inputSystem = new InputSystem();
+        inputSystem.Player.Movement.performed += ctx => _movementDirection = ctx.ReadValue<Vector2>();
+    }
+
     void Start()
     {
         if (rb == null)
@@ -59,7 +68,7 @@ public class PlayerController : MonoBehaviour
     void ProcessInputs()
     {
         // Set the movement direction to the player input
-        movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        movementDirection = _movementDirection;
 
         // Set the movement speed to the magnitude of the movement direction
         movementSpeed = Mathf.Clamp(movementDirection.magnitude, 0.0f, 1.0f);
@@ -111,5 +120,15 @@ public class PlayerController : MonoBehaviour
 
         // Set speed of animator to movement speed
         animator.SetFloat("Speed", movementSpeed);
+    }
+
+    private void OnEnable()
+    {
+        inputSystem.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputSystem.Disable();
     }
 }
