@@ -1,30 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PauseSystem : MonoBehaviour
 {
     public static bool paused;
 
+    [Header("References")]
     public InputSystem inputSystem;
+    
+    private RawImage image;
 
     void Awake()
     {
         inputSystem = new InputSystem();
-        inputSystem.Menu.Escape.performed += ctx => EscPressed();
+        inputSystem.Menu.Escape.performed += ctx => TriggerPause();
     }
 
-    void EscPressed()
+    void Start()
     {
-        Debug.Log("the escape key was pressed");
+        if (image == null)
+        {
+            image = GetComponent<RawImage>();
+        }
     }
 
-    private void OnEnable()
+    void TriggerPause()
+    {
+        paused = !paused;
+        image.enabled = paused;
+    }
+
+    void OnEnable()
     {
         inputSystem.Enable();
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         inputSystem.Disable();
     }

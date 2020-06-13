@@ -76,7 +76,6 @@ public class NPCController : MonoBehaviour
                 if (Mathf.Abs(transform.position.x - currentTarget.x) < errorMargin && Mathf.Abs(transform.position.y - currentTarget.y) < errorMargin)
                 {
                     rb.velocity = Vector2.zero;
-
                     animator.SetFloat("Speed", 0);
 
                     // Snap to grid position for accuracy
@@ -119,6 +118,11 @@ public class NPCController : MonoBehaviour
                 nextTargetHour = path[currentPathIndex].z;
                 currentTarget = new Vector2(path[currentPathIndex].x, path[currentPathIndex].y);
             }
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+            animator.SetFloat("Speed", 0);
         }
     }
 

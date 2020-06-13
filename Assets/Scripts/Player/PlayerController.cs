@@ -122,12 +122,12 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", movementSpeed);
     }
 
-    private void OnEnable()
+    void OnEnable()
     {
         inputSystem.Enable();
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         inputSystem.Disable();
     }
