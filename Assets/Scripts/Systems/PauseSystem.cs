@@ -29,7 +29,17 @@ public class PauseSystem : MonoBehaviour
     void TriggerPause()
     {
         paused = !paused;
+
         image.enabled = paused;
+
+        if (paused)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
     }
 
     void OnEnable()

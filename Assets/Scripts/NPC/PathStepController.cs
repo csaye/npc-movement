@@ -13,7 +13,7 @@ public class PathStepController : MonoBehaviour
     private List<Vector3> path;
     private int currentPathIndex;
 
-    private List<Vector2> traveled;
+    [SerializeField] private List<Vector2> traveledPath = new List<Vector2>();
 
     private Vector2 currentTarget;
     private float nextTargetHour;
@@ -72,32 +72,35 @@ public class PathStepController : MonoBehaviour
             // If next target hour not reached
             if ((!rollover && (TimeSystem.gameTime.TotalHours < nextTargetHour)) || (rollover && (TimeSystem.gameTime.TotalHours - 24 < nextTargetHour)))
             {
-                // If at target, stop
-                if ((Vector2)transform.position == currentTarget)
+                if (Time.time - lastMoveTime >= 1)
                 {
-                    Debug.Log("current position: " + transform.position);
+                    // If at target, stop
+                    if (roundToHalf(transform.position.x) == currentTarget.x && roundToHalf(transform.position.y) == currentTarget.y)
+                    {
+                        rb.velocity = Vector2.zero;
+                        animator.SetFloat("Speed", 0);
 
-                    rb.velocity = Vector2.zero;
-                    animator.SetFloat("Speed", 0);
+                        // Clear the traveled path
+                        traveledPath.Clear();
 
-                    // Snap to grid position for accuracy
-                    transform.position = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
-                }
-                else
-                // Move to target
-                {
-                    if (Time.time - lastMoveTime >= 1)
+                        // Snap to grid position for accuracy
+                        transform.position = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
+                    }
+                    else
+                    // Move to target
                     {
                         MoveToTarget(currentTarget);
 
                         // Snap to grid position for accuracy
                         transform.position = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
-                        Debug.Log("current position: " + transform.position);
                     }
                 }
             }
             else
             {
+                // Clear the traveled path
+                traveledPath.Clear();
+
                 // Find the next target position and time
                 if (currentPathIndex == path.Count - 1)
                 {
@@ -150,223 +153,151 @@ public class PathStepController : MonoBehaviour
     {
         lastMoveTime = Time.time;
 
-        Vector2 down = new Vector2(0, -1);
-        Vector2 left = new Vector2(-1, 0);
-        Vector2 up = new Vector2(0, 1);
-        Vector2 right = new Vector2(1, 0);
+        Vector2 currentPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
+
+        // Add the current position to the traveled path
+        traveledPath.Add(currentPos);
+
+        Vector2 down = new Vector2(currentPos.x, currentPos.y - 1);
+        Vector2 left = new Vector2(currentPos.x - 1, currentPos.y);
+        Vector2 up = new Vector2(currentPos.x, currentPos.y + 1);
+        Vector2 right = new Vector2(currentPos.x + 1, currentPos.y);
 
         // If on more similar vertical axis to target
-        if (Mathf.Abs(roundToHalf(transform.position.x) - target.x) <= Mathf.Abs(roundToHalf(transform.position.y) - target.y))
+        if (Mathf.Abs(currentPos.x - target.x) <= Mathf.Abs(currentPos.y - target.y))
         {
             // If below target
             if (transform.position.y < target.y)
             {
-                // Try moving up
-                if (!obstructed(up))
-                {
-                    Move(up);
-                    return;
-                }
-
                 // If left of target
-                if (transform.position.x <= target.x)
+                if (transform.position.x < target.x)
                 {
-                    // Try moving right
-                    if (!obstructed(right))
-                    {
-                        Move(right);
-                        return;
-                    }
-
-                    // Try moving left
-                    if (!obstructed(left))
-                    {
-                        Move(left);
-                        return;
-                    }
-
+                    TryMove(up, right, left, down);
                 }
                 // If right of target
                 else
                 {
-                    // Try moving left
-                    if (!obstructed(left))
-                    {
-                        Move(left);
-                        return;
-                    }
-
-                    // Try moving right
-                    if (!obstructed(right))
-                    {
-                        Move(right);
-                        return;
-                    }
+                    TryMove(up, left, right, down);
                 }
-
-                return;
             }
-
             // If above target
             else
             {
-                // Try moving down
-                if (!obstructed(down))
-                {
-                    Move(down);
-                    return;
-                }
-
                 // If left of target
-                if (transform.position.x <= target.x)
+                if (transform.position.x < target.x)
                 {
-                    // Try moving right
-                    if (!obstructed(right))
-                    {
-                        Move(right);
-                        return;
-                    }
-
-                    if (!obstructed(left))
-                    {
-                        Move(left);
-                        return;
-                    }
-
+                    TryMove(down, right, left, up);
                 }
                 // If right of target
                 else
                 {
-                    // Try moving left
-                    if (!obstructed(left))
-                    {
-                        Move(left);
-                        return;
-                    }
-
-                    // Try moving right
-                    if (!obstructed(right))
-                    {
-                        Move(right);
-                        return;
-                    }
+                    TryMove(down, left, right, up);
                 }
-
-                return;
             }
         }
-        else
         // If on more similar horizontal axis to target
+        else
         {
             // If left of target
             if (transform.position.x < target.x)
             {
-                // Try moving right
-                if (!obstructed(right))
-                {
-                    Move(right);
-                    return;
-                }
-
                 // If below target
-                if (transform.position.y <= target.y)
+                if (transform.position.y < target.y)
                 {
-                    // Try moving up
-                    if (!obstructed(up))
-                    {
-                        Move(up);
-                        return;
-                    }
-
-                    // Try moving down
-                    if (!obstructed(down))
-                    {
-                        Move(down);
-                        return;
-                    }
-
+                    TryMove(right, up, down, left);
                 }
                 // If above target
                 else
                 {
-                    // Try moving down
-                    if (!obstructed(down))
-                    {
-                        Move(down);
-                        return;
-                    }
-
-                    // Try moving up
-                    if (!obstructed(up))
-                    {
-                        Move(up);
-                        return;
-                    }
+                    TryMove(right, down, up, left);
                 }
-
-                return;
             }
             // If right of target
             else
             {
-                // Try moving left
-                if (!obstructed(left))
-                {
-                    Move(left);
-                    return;
-                }
-
                 // If below target
-                if (transform.position.y <= target.y)
+                if (transform.position.y < target.y)
                 {
-                    // Try moving up
-                    if (!obstructed(up))
-                    {
-                        Move(up);
-                        return;
-                    }
-
-                    // Try moving down
-                    if (!obstructed(down))
-                    {
-                        Move(down);
-                        return;
-                    }
-
+                    TryMove(left, up, down, right);
                 }
                 // If above target
                 else
                 {
-                    // Try moving down
-                    if (!obstructed(down))
-                    {
-                        Move(down);
-                        return;
-                    }
-
-                    // Try moving up
-                    if (!obstructed(up))
-                    {
-                        Move(up);
-                        return;
-                    }
+                    TryMove(left, down, up, right);
                 }
-
-                return;
             }
+        }
+    }
+
+    void TryMove(Vector2 first, Vector2 second, Vector2 third, Vector2 fourth)
+    {
+        Vector2 currentPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
+
+        // Try first direction
+        if (!obstructed(first) && !traveled(first))
+        {
+            Move(first);
+            return;
+        }
+        
+        // Try second direction
+        if (!obstructed(second) && !traveled(second))
+        {
+            Move(second);
+            return;
+        }
+        
+        // Try third direction
+        if (!obstructed(third) && !traveled(third))
+        {
+            Move(third);
+            return;
+        }
+        
+        // Try fourth direction
+        if (!obstructed(fourth) && !traveled(fourth))
+        {
+            Move(fourth);
+            return;
+        }
+        
+        // Try first direction
+        if (!obstructed(first))
+        {
+            Move(first);
+            return;
+        }
+        
+        // Try second direction
+        if (!obstructed(second))
+        {
+            Move(second);
+            return;
+        }
+        
+        // Try third direction
+        if (!obstructed(third))
+        {
+            Move(third);
+            return;
+        }
+        
+        // Try fourth direction
+        if (!obstructed(fourth))
+        {
+            Move(fourth);
+            return;
         }
     }
 
     // Returns whether position has collider obstructing it
     bool obstructed(Vector2 target)
     {
-        Vector2 pos = (Vector2)transform.position + target;
-
         // Set check to size to just under full block in order to prevent collider bleeding
-        Vector2 size = new Vector2(0.49f, 0.49f);
+        Vector2 size = new Vector2(0.499f, 0.499f);
 
         // If non-trigger collider within the position found, return obstructed
-        foreach (Collider2D collider in (Physics2D.OverlapBoxAll(pos, size, 0)))
+        foreach (Collider2D collider in (Physics2D.OverlapBoxAll(target, size, 0)))
         {
             if (!collider.isTrigger)
             {
@@ -376,12 +307,21 @@ public class PathStepController : MonoBehaviour
         return false;
     }
 
+    bool traveled(Vector2 target)
+    {
+        return (traveledPath.Contains(target));
+    }
+
     void Move(Vector2 target)
     {
-        rb.velocity = target;
+        Vector2 currentPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
 
-        animator.SetFloat("Horizontal", target.x);
-        animator.SetFloat("Vertical", target.y);
+        Vector2 direction = target - currentPos;
+
+        rb.velocity = direction;
+
+        animator.SetFloat("Horizontal", direction.x);
+        animator.SetFloat("Vertical", direction.y);
         animator.SetFloat("Speed", 1);
     }
 }
