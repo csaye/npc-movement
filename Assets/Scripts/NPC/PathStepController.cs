@@ -155,7 +155,11 @@ public class PathStepController : MonoBehaviour
 
         Vector2 currentPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
 
-        // Add the current position to the traveled path
+        // Add the current position to the traveled path and replace if already in list
+        if (traveledPath.Contains(currentPos))
+        {
+            traveledPath.Remove(currentPos);
+        }
         traveledPath.Add(currentPos);
 
         Vector2 down = new Vector2(currentPos.x, currentPos.y - 1);
@@ -261,29 +265,57 @@ public class PathStepController : MonoBehaviour
             return;
         }
         
+        List<int> indexList = new List<int>();
+
+        if (!obstructed(first)) {
+            int firstIndex = traveledPath.IndexOf(first);
+            indexList.Add(firstIndex);
+        }
+        if (!obstructed(second)) {
+            int secondIndex = traveledPath.IndexOf(second);
+            indexList.Add(secondIndex);
+        }
+        if (!obstructed(third)) {
+            int thirdIndex = traveledPath.IndexOf(third);
+            indexList.Add(thirdIndex);
+        }
+        if (!obstructed(fourth)) {
+            int fourthIndex = traveledPath.IndexOf(fourth);
+            indexList.Add(fourthIndex);
+        }
+
+        // If all walls are obstructed, return
+        if (indexList.Count == 0)
+        {
+            return;
+        }
+
+        // Find the most recent traveled tile
+        indexList.Sort();
+
         // Try first direction
-        if (!obstructed(first))
+        if (!obstructed(first) && (indexList[0] == traveledPath.IndexOf(first)))
         {
             Move(first);
             return;
         }
         
         // Try second direction
-        if (!obstructed(second))
+        if (!obstructed(second) && (indexList[0] == traveledPath.IndexOf(second)))
         {
             Move(second);
             return;
         }
         
         // Try third direction
-        if (!obstructed(third))
+        if (!obstructed(third) && (indexList[0] == traveledPath.IndexOf(third)))
         {
             Move(third);
             return;
         }
         
         // Try fourth direction
-        if (!obstructed(fourth))
+        if (!obstructed(fourth) && (indexList[0] == traveledPath.IndexOf(fourth)))
         {
             Move(fourth);
             return;
