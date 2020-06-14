@@ -13,7 +13,7 @@ public class PathStepController : MonoBehaviour
     private List<Vector3> path;
     private int currentPathIndex;
 
-    [SerializeField] private List<Vector2> traveledPath = new List<Vector2>();
+    private List<Vector2> traveledPath = new List<Vector2>();
 
     private Vector2 currentTarget;
     private float nextTargetHour;
@@ -125,11 +125,6 @@ public class PathStepController : MonoBehaviour
                 currentTarget = new Vector2(path[currentPathIndex].x, path[currentPathIndex].y);
             }
         }
-        else
-        {
-            rb.velocity = Vector2.zero;
-            animator.SetFloat("Speed", 0);
-        }
     }
 
     // Returns num rounded to the nearest half offset integer
@@ -235,8 +230,6 @@ public class PathStepController : MonoBehaviour
 
     void TryMove(Vector2 first, Vector2 second, Vector2 third, Vector2 fourth)
     {
-        Vector2 currentPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
-
         // Try first direction
         if (!obstructed(first) && !traveled(first))
         {

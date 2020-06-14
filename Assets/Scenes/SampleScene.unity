@@ -793,11 +793,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 841998760}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1cf9e31f082a4c3a96234c5c12b5097, type: 3}
+  m_Script: {fileID: 11500000, guid: 32604f92867164cd58036f908db5772c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   NPCScriptable: {fileID: 11400000, guid: 6de57dbfe266a4048a05abbc501b8ec5, type: 2}
-  traveledPath: []
+  testPrefab: {fileID: 463317191}
 --- !u!212 &841998763
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1027,7 +1027,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NPCScriptable: {fileID: 11400000, guid: b0830f12c3691481699a55280a42b12b, type: 2}
-  traveledPath: []
 --- !u!1 &1077742254
 GameObject:
   m_ObjectHideFlags: 0
@@ -1485,7 +1484,21 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 1412536595}
     m_ColliderPaths:
-    - - X: -100
+    - - X: -20000041
+        Y: -10000100
+      - X: -9999959
+        Y: -10000100
+      - X: -9999900
+        Y: -10000041
+      - X: -9999900
+        Y: 19999900
+      - X: 19999900
+        Y: 19999900
+      - X: 19999900
+        Y: -9999900
+      - X: -41
+        Y: -9999900
+      - X: -100
         Y: -9999959
       - X: -100
         Y: -20000041
@@ -1523,20 +1536,6 @@ CompositeCollider2D:
         Y: 20000041
       - X: -20000100
         Y: -10000041
-      - X: -20000041
-        Y: -10000100
-      - X: -9999959
-        Y: -10000100
-      - X: -9999900
-        Y: -10000041
-      - X: -9999900
-        Y: 19999900
-      - X: 19999900
-        Y: 19999900
-      - X: 19999900
-        Y: -9999900
-      - X: -41
-        Y: -9999900
   m_CompositePaths:
     m_Paths:
     - - {x: 1.9999808, y: 1.99999}
