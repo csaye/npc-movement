@@ -375,12 +375,15 @@ public class GoalStepController : MonoBehaviour
         Vector2 playerPos = new Vector2(roundToHalf(transform.position.x), roundToHalf(transform.position.y));
         roughPointer = playerPos;
 
+        // From player position to target
         for (int i = 0; i < maximumIterations; i++)
         {
             roughPath.Add(roughPointer);
 
             if (roughPointer == target)
             {
+                traveledPath.Clear();
+                // break;
                 return roughPath;
             }
 
@@ -461,6 +464,95 @@ public class GoalStepController : MonoBehaviour
                 }
             }
         }
+
+        // // From target to player position
+        // for (int i = 0; i < maximumIterations; i++)
+        // {
+        //     roughPath.Add(roughPointer);
+
+        //     if (roughPointer == playerPos)
+        //     {
+        //         traveledPath.Clear();
+        //         return roughPath;
+        //     }
+
+        //     // Add the current pointer position to the traveled path and replace if already in list
+        //     if (traveledPath.Contains(roughPointer))
+        //     {
+        //         traveledPath.Remove(roughPointer);
+        //     }
+        //     traveledPath.Add(roughPointer);
+
+        //     Vector2 down = new Vector2(roughPointer.x, roughPointer.y - 1);
+        //     Vector2 left = new Vector2(roughPointer.x - 1, roughPointer.y);
+        //     Vector2 up = new Vector2(roughPointer.x, roughPointer.y + 1);
+        //     Vector2 right = new Vector2(roughPointer.x + 1, roughPointer.y);
+
+        //     // If on more similar vertical axis to target
+        //     if (Mathf.Abs(roughPointer.x - playerPos.x) <= Mathf.Abs(roughPointer.y - playerPos.y))
+        //     {
+        //         // If below target
+        //         if (roughPointer.y < playerPos.y)
+        //         {
+        //             // If left of target
+        //             if (roughPointer.x < playerPos.x)
+        //             {
+        //                 TryMoveRoughPointer(up, right, left, down);
+        //             }
+        //             // If right of target
+        //             else
+        //             {
+        //                 TryMoveRoughPointer(up, left, right, down);
+        //             }
+        //         }
+        //         // If above target
+        //         else
+        //         {
+        //             // If left of target
+        //             if (roughPointer.x < playerPos.x)
+        //             {
+        //                 TryMoveRoughPointer(down, right, left, up);
+        //             }
+        //             // If right of target
+        //             else
+        //             {
+        //                 TryMoveRoughPointer(down, left, right, up);
+        //             }
+        //         }
+        //     }
+        //     // If on more similar horizontal axis to target
+        //     else
+        //     {
+        //         // If left of target
+        //         if (roughPointer.x < playerPos.x)
+        //         {
+        //             // If below target
+        //             if (roughPointer.y < playerPos.y)
+        //             {
+        //                 TryMoveRoughPointer(right, up, down, left);
+        //             }
+        //             // If above target
+        //             else
+        //             {
+        //                 TryMoveRoughPointer(right, down, up, left);
+        //             }
+        //         }
+        //         // If right of target
+        //         else
+        //         {
+        //             // If below target
+        //             if (roughPointer.y < playerPos.y)
+        //             {
+        //                 TryMoveRoughPointer(left, up, down, right);
+        //             }
+        //             // If above target
+        //             else
+        //             {
+        //                 TryMoveRoughPointer(left, down, up, right);
+        //             }
+        //         }
+        //     }
+        // }
 
         return null;
     }
