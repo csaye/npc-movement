@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Inputs\InputSystem.cs" />
+     <Compile Include="Assets\Scriptables\NPC\NPCPathType.cs" />
      <Compile Include="Assets\Scriptables\NPC\NPCScriptable.cs" />
      <Compile Include="Assets\Scripts\NPC\GoalStepController.cs" />
      <Compile Include="Assets\Scripts\NPC\NPCController.cs" />
@@ -54,6 +55,7 @@
      <Compile Include="Assets\Scripts\Systems\PauseSystem.cs" />
      <Compile Include="Assets\Scripts\Systems\TimeSystem.cs" />
      <Compile Include="Assets\Scripts\UI\TimeDisplayUI.cs" />
+     <Compile Include="Assets\TestObjectController.cs" />
      <None Include="Assets\Extras\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
      <None Include="Assets\Extras\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\Extras\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />

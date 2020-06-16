@@ -7,4 +7,5 @@ public class NPCScriptable : ScriptableObject
 {
     public string NPCName;
     public List<Vector3> path;
+    public List<NPCPathType> pathType;
 }
